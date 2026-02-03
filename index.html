@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>💝 Will You Be My Valentine? 💝</title>
+    <link rel="stylesheet" href="style2.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="A special Valentine's Day surprise" />
+    <meta name="keywords" content="Valentine, Love, Romance, Surprise" />
+    <meta name="author" content="Aryan" />
+  </head>
+  <body>
+    <!-- Animated Background -->
+    <div class="background-animation">
+      <div class="hearts-container" id="heartsContainer"></div>
+      <div class="particles" id="particles"></div>
+    </div>
+
+    <!-- Countdown Timer -->
+    <div class="countdown-container" id="countdownContainer">
+      <div class="countdown-label">💕 Valentine's Day Countdown 💕</div>
+      <div class="countdown-display" id="countdownDisplay"></div>
+    </div>
+
+    <!-- Love Meter -->
+    <div class="love-meter-container">
+      <div class="love-meter-label">Love Meter 💗</div>
+      <div class="love-meter">
+        <div class="love-meter-fill" id="loveMeter"></div>
+        <div class="love-meter-text" id="loveMeterText">0%</div>
+      </div>
+    </div>
+
+    <!-- Main Content Card -->
+    <div class="main-card" id="mainCard">
+      <div class="card-inner">
+        <!-- Front of Card -->
+        <div class="card-front">
+          <div class="sparkle sparkle-1">✨</div>
+          <div class="sparkle sparkle-2">✨</div>
+          <div class="sparkle sparkle-3">✨</div>
+          <div class="sparkle sparkle-4">✨</div>
+          
+          <h1 class="headerText animated-gradient" id="mainQuestion">
+            <span class="typing-text">Gargee, Will You Be My Valentine? 🥺</span>
+          </h1>
+          
+          <div class="image-container">
+            <div class="image-glow"></div>
+            <img class="main-image pulse" src="https://github.com/NikhilMarko03/resources/blob/main/happy1.gif?raw=true" alt="Valentine" id="mainImg" />
+          </div>
+          
+          <div class="button-container" id="btns">
+            <button
+              class="button button-yes"
+              id="yesBtn"
+              onmouseenter="handleYesHover()"
+              onmouseleave="handleNormalState()"
+              onclick="handleYes()"
+            >
+              <span class="button-shine"></span>
+              <span class="button-text">Yes! 💝</span>
+            </button>
+            <button
+              class="button button-no"
+              id="noBtn"
+              onmouseenter="handleNoHover()"
+              onmouseleave="handleNormalState()"
+              onclick="handleNo()"
+            >
+              <span class="button-text">No 😢</span>
+            </button>
+          </div>
+
+          <div class="scroll-hint">
+            <p class="hint-text">❤️ Hover over the buttons to see something special ❤️</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Hearts Animation -->
+    <div class="floating-hearts" id="floatingHearts"></div>
+
+    <!-- Confession Modal -->
+    <div class="modal" id="confessionModal">
+      <div class="modal-content confession-modal">
+        <div class="love-letter">
+          <div class="letter-header">
+            <span class="stamp">💌</span>
+            <h2>A Message For You, Gargee...</h2>
+          </div>
+          <div class="letter-body" id="letterBody">
+            <p class="typing-letter" id="typingLetter"></p>
+          </div>
+          <div class="letter-footer">
+            <p>With all my love ❤️</p>
+          </div>
+        </div>
+        <button class="button button-close" onclick="closeConfession()">
+          Continue 💕
+        </button>
+        <button class="button button-close-x" onclick="closeConfession()" title="Close">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Please Say Yes Modal -->
+    <div class="modal" id="pleaseModal">
+      <div class="modal-content please-modal">
+        <div class="sad-animation">
+          <p class="modelText dramatic-text" id="pleaseText">Please... 🥺</p>
+          <img
+            class="modalImg sad-img"
+            id="pleaseImg"
+            src="https://media1.tenor.com/images/9413ffc5a11722a3cc456a88810750bd/tenor.gif?itemid=14193216"
+            alt="Please"
+          />
+          <div class="please-counter" id="pleaseCounter"></div>
+          <div class="progress-hint" id="progressHint">💡 Keep clicking "Still No" to fill your love meter to 50%! Then you can close this! 💕</div>
+        </div>
+        <div class="button-container">
+          <button
+            class="button button-yes"
+            onclick="handleYes()"
+          >
+            <span class="button-text">Okay, Yes! 💝</span>
+          </button>
+          <button
+            class="button button-no"
+            onclick="handleNo()"
+          >
+            <span class="button-text">Still No 😭</span>
+          </button>
+          <button
+            class="button button-close-x"
+            onclick="closePlease()"
+            title="Close Modal"
+          >
+            <span class="button-text">✕</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Celebration Modal -->
+    <div class="modal" id="successModal">
+      <div class="modal-content success-modal">
+        <div class="confetti-container" id="confettiContainer"></div>
+        <div class="celebration-content">
+          <h1 class="success-title animated-gradient">🎉 YES! Gargee Said Yes! We're Valentines! 🎉</h1>
+          <img
+            class="celebration-img"
+            id="celebrationImg"
+            src="./cat-cute.gif"
+            alt="Celebration"
+          />
+          <p class="success-message" id="successMessage">
+            I'm so happy you said yes! You've made me the happiest person! 💕✨
+          </p>
+          <div class="button-container">
+            <button class="button button-celebration" onclick="openFlowerGarden()">
+              <span class="button-text">See Your Surprise 🌸</span>
+            </button>
+            <button class="button button-secondary" onclick="closeSuccess()">
+              <span class="button-text">Stay Here 💝</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Music Player -->
+    <div class="music-player" id="musicPlayer">
+      <button class="music-toggle" id="musicToggle" onclick="toggleMusic()" title="Toggle Music">
+        <span class="music-icon">🔇</span>
+      </button>
+      <!-- Single audio element for continuous playback -->
+      <audio id="backgroundMusic" loop preload="auto">
+        <source src="./Abhi Na Jao Chhod Kar.mp3" type="audio/mpeg" />
+      </audio>
+    </div>
+
+    <!-- Mini-Games Section -->
+    <div class="games-section" id="gamesSection">
+      <div class="games-header">
+        <h3>💕 Play Games While You Wait 💕</h3>
+        <p>Unlock bonus points for my heart!</p>
+      </div>
+      <div class="games-grid">
+        <button class="game-card" onclick="startHeartCatch()">
+          <span class="game-icon">💓</span>
+          <span class="game-name">Catch Hearts</span>
+          <span class="game-desc">Get harder levels!</span>
+        </button>
+        <button class="game-card" onclick="startLoveQuiz()">
+          <span class="game-icon">⚡</span>
+          <span class="game-name">Speed Typing</span>
+          <span class="game-desc">Type romantic words fast!</span>
+        </button>
+        <button class="game-card" onclick="startHeartBreaker()">
+          <span class="game-icon">🧠</span>
+          <span class="game-name">Memory Hearts</span>
+          <span class="game-desc">Match heart pairs!</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Game Modal -->
+    <div class="modal" id="gameModal">
+      <div class="modal-content game-modal">
+        <button class="button button-close-x" onclick="closeGame()" title="Close Game">✕</button>
+        <div id="gameContent"></div>
+      </div>
+    </div>
+
+    <script src="main2.js"></script>
+  </body>
+</html>
