@@ -27,9 +27,15 @@ window.onload = () => {
 
 // ==================== GARDEN INITIALIZATION ====================
 function initializeGarden() {
-  createStars();
-  createFloatingPetals();
-  createMagicalLights();
+  try {
+    createStars();
+    createFloatingPetals();
+    createMagicalLights();
+    initializeCarousel();
+    initializeLightbox();
+  } catch (error) {
+    console.error('Error initializing garden:', error);
+  }
   
   // Music is handled on the main page - no audio control here
 }
@@ -97,27 +103,248 @@ function createMagicalLights() {
   }
 }
 
-// ==================== PROGRESS TRACKING ====================
+// ==================== PICTURE CAROUSEL ====================
+let currentSlide = 0;
+let totalSlides = 0;
+let autoSlideInterval = null;
+let carouselImages = []; // Store image sources
+
+function initializeCarousel() {
+  console.log('Initializing carousel...');
+  const track = document.getElementById('carouselTrack');
+  const indicatorsContainer = document.getElementById('carouselIndicators');
+  
+  if (!track) {
+    console.error('Carousel track not found!');
+    return;
+  }
+  if (!indicatorsContainer) {
+    console.error('Carousel indicators not found!');
+    return;
+  }
+  
+  console.log('Carousel elements found, loading images...');
+  
+  const pictureFolder = 'picture/';
+  
+  // Function to check if an image exists
+  const checkImage = (index) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve({ exists: true, index });
+      img.onerror = () => resolve({ exists: false, index });
+      img.src = `${pictureFolder}pic${index}.jpg`;
+    });
+  };
+  
+  // Check for images up to pic50.jpg
+  const loadImages = async () => {
+    const checks = [];
+    for (let i = 1; i <= 50; i++) {
+      checks.push(checkImage(i));
+    }
+    
+    const results = await Promise.all(checks);
+    const validImages = results.filter(r => r.exists);
+    
+    if (validImages.length === 0) {
+      console.error('No images found in picture folder!');
+      return;
+    }
+    
+    totalSlides = validImages.length;
+    console.log(`Found ${totalSlides} images`);
+    
+    // Store image sources for lightbox
+    carouselImages = validImages.map(img => `picture/pic${img.index}.jpg`);
+    
+    // Create carousel slides for each valid image
+    validImages.forEach((imgData, index) => {
+      const slide = document.createElement('div');
+      slide.className = 'carousel-slide';
+      if (index === 0) slide.classList.add('active');
+      
+      const image = document.createElement('img');
+      image.src = `${pictureFolder}pic${imgData.index}.jpg`;
+      image.alt = `Memory ${imgData.index}`;
+      image.className = 'carousel-image';
+      image.style.cursor = 'pointer';
+      image.addEventListener('click', () => openLightbox(index));
+      
+      slide.appendChild(image);
+      track.appendChild(slide);
+      
+      // Create indicator
+      const indicator = document.createElement('div');
+      indicator.className = 'carousel-indicator';
+      if (index === 0) indicator.classList.add('active');
+      indicator.addEventListener('click', () => goToSlide(index));
+      indicatorsContainer.appendChild(indicator);
+    });
+    
+    console.log(`Created ${totalSlides} slides`);
+    
+    // Setup navigation
+    setupCarouselNavigation();
+    startAutoSlide();
+  };
+  
+  loadImages();
+}
+
+function setupCarouselNavigation() {
+  const prevBtn = document.getElementById('carouselPrev');
+  const nextBtn = document.getElementById('carouselNext');
+  
+  if (!prevBtn || !nextBtn || totalSlides === 0) return;
+  
+  if (prevBtn) prevBtn.addEventListener('click', () => {
+    stopAutoSlide();
+    previousSlide();
+    startAutoSlide();
+  });
+  
+  if (nextBtn) nextBtn.addEventListener('click', () => {
+    stopAutoSlide();
+    nextSlide();
+    startAutoSlide();
+  });
+}
+
+function goToSlide(index) {
+  const slides = document.querySelectorAll('.carousel-slide');
+  const indicators = document.querySelectorAll('.carousel-indicator');
+  
+  if (slides.length === 0) return;
+  
+  // Remove active class from all
+  slides.forEach(slide => slide.classList.remove('active'));
+  indicators.forEach(ind => ind.classList.remove('active'));
+  
+  // Add active class to current
+  currentSlide = index;
+  slides[currentSlide].classList.add('active');
+  indicators[currentSlide].classList.add('active');
+}
+
+function nextSlide() {
+  currentSlide = (currentSlide + 1) % totalSlides;
+  goToSlide(currentSlide);
+}
+
+function previousSlide() {
+  currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+  goToSlide(currentSlide);
+}
+
+function startAutoSlide() {
+  if (totalSlides === 0) return;
+  stopAutoSlide();
+  autoSlideInterval = setInterval(nextSlide, 4000); // Change slide every 4 seconds
+}
+
+function stopAutoSlide() {
+  if (autoSlideInterval) {
+    clearInterval(autoSlideInterval);
+    autoSlideInterval = null;
+  }
+}
+
+// ==================== LIGHTBOX FUNCTIONALITY ====================
+let lightboxIndex = 0;
+
+function openLightbox(index) {
+  try {
+    const overlay = document.getElementById('lightboxOverlay');
+    const image = document.getElementById('lightboxImage');
+    const counter = document.getElementById('lightboxCounter');
+    
+    if (!overlay || !image || carouselImages.length === 0) return;
+    
+    lightboxIndex = index;
+    image.src = carouselImages[lightboxIndex];
+    counter.textContent = `${lightboxIndex + 1} / ${totalSlides}`;
+    
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    stopAutoSlide();
+  } catch (error) {
+    console.error('Error opening lightbox:', error);
+  }
+}
+
+function closeLightbox() {
+  const overlay = document.getElementById('lightboxOverlay');
+  if (!overlay) return;
+  
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+  
+  startAutoSlide();
+}
+
+function lightboxNextImage() {
+  if (totalSlides === 0 || carouselImages.length === 0) return;
+  lightboxIndex = (lightboxIndex + 1) % totalSlides;
+  updateLightboxImage();
+}
+
+function lightboxPrevImage() {
+  if (totalSlides === 0 || carouselImages.length === 0) return;
+  lightboxIndex = (lightboxIndex - 1 + totalSlides) % totalSlides;
+  updateLightboxImage();
+}
+
+function updateLightboxImage() {
+  const image = document.getElementById('lightboxImage');
+  const counter = document.getElementById('lightboxCounter');
+  
+  if (!image || carouselImages.length === 0) return;
+  
+  image.style.opacity = '0';
+  
+  setTimeout(() => {
+    image.src = carouselImages[lightboxIndex];
+    counter.textContent = `${lightboxIndex + 1} / ${totalSlides}`;
+    image.style.opacity = '1';
+  }, 200);
+}
+
+function initializeLightbox() {
+  const closeBtn = document.getElementById('lightboxClose');
+  const prevBtn = document.getElementById('lightboxPrev');
+  const nextBtn = document.getElementById('lightboxNext');
+  const overlay = document.getElementById('lightboxOverlay');
+  
+  if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+  if (prevBtn) prevBtn.addEventListener('click', lightboxPrevImage);
+  if (nextBtn) nextBtn.addEventListener('click', lightboxNextImage);
+  
+  if (overlay) {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeLightbox();
+    });
+  }
+  
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (!overlay || !overlay.classList.contains('active')) return;
+    
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') lightboxPrevImage();
+    if (e.key === 'ArrowRight') lightboxNextImage();
+  });
+}
+
+// ==================== PROGRESS TRACKING (DISABLED) ====================
+// Progress tracking removed to allow continuous viewing
 function updateProgress() {
-  bloomProgress = flowersClicked.size;
-  const progressPercent = Math.min(Math.round((bloomProgress / TOTAL_FLOWERS) * 100), 100);
-  
-  const progressFill = document.getElementById('progressFill');
-  const progressPercentText = document.getElementById('progressPercent');
-  
-  if (progressFill) {
-    progressFill.style.width = progressPercent + '%';
-  }
-  if (progressPercentText) {
-    progressPercentText.textContent = progressPercent + '%';
-  }
+  // Progress tracking disabled
 }
 
 // ==================== FLOWER INTERACTION ====================
 function showFlowerMessage(flowerNumber) {
-  // Mark flower as clicked
-  flowersClicked.add(flowerNumber);
-  
   // Show modal with message
   const modal = document.getElementById('flowerMessageModal');
   const messageTitle = document.getElementById('messageTitle');
@@ -136,21 +363,11 @@ function showFlowerMessage(flowerNumber) {
   if (hint) {
     hint.style.display = 'none';
   }
-  
-  // Update progress based on flowers clicked
-  updateProgress();
 }
 
 function closeFlowerMessage() {
   const modal = document.getElementById('flowerMessageModal');
   modal.style.display = 'none';
-  
-  // Check for completion AFTER closing the modal (gives user time to read)
-  if (bloomProgress >= TOTAL_FLOWERS) {
-    setTimeout(() => {
-      showCompletion();
-    }, 800);
-  }
 }
 
 // ==================== SPARKLE EFFECT ====================

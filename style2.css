@@ -40,6 +40,8 @@ body {
 @keyframes gradientShift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+
+
 }
 /* Background Animation */
 .background-animation {
@@ -623,6 +625,58 @@ body {
   animation: bounce 1s ease infinite;
 }
 
+@media (max-width: 480px) {
+  .carousel-section {
+    margin: 50px auto 30px;
+    padding: 25px 15px;
+  }
+
+  .carousel-title {
+    font-size: 28px;
+  }
+
+  .carousel-subtitle {
+    font-size: 14px;
+  }
+
+  .carousel-track {
+    height: 350px;
+  }
+
+  .carousel-card {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .carousel-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 18px;
+  }
+
+  .carousel-btn-prev {
+    left: -15px;
+  }
+
+  .carousel-btn-next {
+    right: -15px;
+  }
+
+  .carousel-caption {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .dot.active {
+    width: 24px;
+  }
+}
+
 @keyframes bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
@@ -832,6 +886,44 @@ body {
 
   .easter-egg {
     bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .carousel-section {
+    margin: 60px auto 40px;
+    padding: 30px 20px;
+  }
+
+  .carousel-title {
+    font-size: 32px;
+  }
+
+  .carousel-track {
+    height: 400px;
+  }
+
+  .carousel-card {
+    padding: 18px;
+  }
+
+  .carousel-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+  }
+
+  .carousel-btn-prev {
+    left: -20px;
+  }
+
+  .carousel-btn-next {
+    right: -20px;
+  }
+
+  .carousel-caption {
+    font-size: 16px;
+  }
     left: 50%;
     transform: translateX(-50%);
   }
